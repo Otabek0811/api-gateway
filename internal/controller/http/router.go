@@ -12,15 +12,20 @@ import (
 	"github.com/gofiber/swagger"
 	"net/http"
 	"time"
+
+	_ "GolandProjects/api-gateway/docs"
 )
 
 // NewRouter -.
-// Swagger spec:
-// @title       Go Api Gateway
-// @description api gateway - go fiber
-// @version     1.0
-// @host        localhost:8080
-// @BasePath    /api/v1
+// @title Go Fiber Api Gateway
+// @version 1.0
+// @description This is a Go Boilerplate for medium sized projects
+// @contact.name Otabek Karimjonov
+// @contact.email karimjonov6006@gmail.com
+// @contact.url https://www.linkedin.com/in/otabek-karimjonov
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func NewRouter(app *fiber.App, cfg *config.Config, log logger.Interface) {
 	permissions := config.NewPermissions()
 

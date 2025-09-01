@@ -1,6 +1,9 @@
 package config
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Permission struct {
 	Name   string
@@ -174,6 +177,8 @@ func matchPath(routePath, reqPath string) bool {
 }
 
 func (p *Permissions) GetPermission(method, reqPath string) (Permission, bool) {
+	reqPath = strings.Split(reqPath, "?")[0]
+	fmt.Println(reqPath)
 	for _, perm := range p.permissionsMap {
 		if strings.EqualFold(perm.Method, method) && matchPath(perm.Path, reqPath) {
 			return perm, true

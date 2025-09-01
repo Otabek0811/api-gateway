@@ -2,6 +2,7 @@ package v1
 
 import (
 	"GolandProjects/api-gateway/config"
+	"GolandProjects/api-gateway/internal/entity"
 	"GolandProjects/api-gateway/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -16,18 +17,18 @@ type V1 struct {
 }
 
 func (r *V1) HandleSuccessResponse(ctx *fiber.Ctx, code int, data interface{}) error {
-	return ctx.Status(code).JSON(fiber.Map{
-		"code":    code,
-		"success": true,
-		"data":    data,
+	return ctx.Status(code).JSON(entity.SuccessResponse{
+		Code:    code,
+		Success: true,
+		Data:    data,
 	})
 }
 
 func (r *V1) HandleErrorResponse(ctx *fiber.Ctx, code int, msg string, err error) error {
-	return ctx.Status(code).JSON(fiber.Map{
-		"success": false,
-		"message": msg,
-		"error":   err.Error(),
-		"code":    code,
+	return ctx.Status(code).JSON(entity.ErrorResponse{
+		Success: false,
+		Message: msg,
+		Error:   err.Error(),
+		Code:    code,
 	})
 }

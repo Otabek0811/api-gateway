@@ -17,7 +17,7 @@ type Filter struct {
 }
 
 type GetListFilter struct {
-	Page    int       `json:"offset"`
+	Page    int       `json:"page"`
 	Limit   int       `json:"limit"`
 	Filters []Filter  `json:"filters"`
 	OrderBy []OrderBy `json:"order_by"`

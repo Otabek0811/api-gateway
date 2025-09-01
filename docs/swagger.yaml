@@ -1,0 +1,160 @@
+definitions:
+  auth_service_entity.Filter:
+    properties:
+      column:
+        type: string
+      type:
+        description: eq, ne, gt, gte, lt, lte, search
+        type: string
+      value:
+        type: string
+    type: object
+  auth_service_entity.GetRoles:
+    properties:
+      count:
+        type: integer
+      roles:
+        items:
+          $ref: '#/definitions/auth_service_entity.Role'
+        type: array
+    type: object
+  auth_service_entity.OrderBy:
+    properties:
+      column:
+        type: string
+      order:
+        type: string
+    type: object
+  auth_service_entity.Permission:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: boolean
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  auth_service_entity.Role:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/auth_service_entity.Permission'
+        type: array
+      status:
+        type: boolean
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  entity.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entity.SuccessResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      success:
+        type: boolean
+    type: object
+info:
+  contact:
+    email: karimjonov6006@gmail.com
+    name: Otabek Karimjonov
+    url: https://www.linkedin.com/in/otabek-karimjonov
+  description: This is a Go Boilerplate for medium sized projects
+  title: Go Fiber Api Gateway
+  version: "1.0"
+paths:
+  /api/v1/roles:
+    get:
+      consumes:
+      - application/json
+      description: get list roles
+      operationId: get-list-role
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.GetRoles'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get list roles
+      tags:
+      - role
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

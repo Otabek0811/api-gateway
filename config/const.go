@@ -21,6 +21,11 @@ func NewPermissions() *Permissions {
 
 		// Permissions for Role
 		{
+			Name:   "CREATE_ROLE",
+			Method: "POST",
+			Path:   "/api/v1/roles",
+		},
+		{
 			Name:   "GET_ALL_ROLES",
 			Method: "GET",
 			Path:   "/api/v1/roles",
@@ -48,6 +53,11 @@ func NewPermissions() *Permissions {
 
 		// Permissions for Permission
 		{
+			Name:   "CREATE_PERMISSION",
+			Method: "POST",
+			Path:   "/api/v1/permissions",
+		},
+		{
 			Name:   "GET_ALL_PERMISSIONS",
 			Method: "GET",
 			Path:   "/api/v1/permissions",
@@ -71,6 +81,26 @@ func NewPermissions() *Permissions {
 			Name:   "PATCH_PERMISSION",
 			Method: "PATCH",
 			Path:   "/api/v1/permissions",
+		},
+		{
+			Name:   "ADD_ROLE_PERMISSION",
+			Method: "POST",
+			Path:   "/api/v1/permissions/add-role-permission",
+		},
+		{
+			Name:   "DELETE_ROLE_PERMISSION",
+			Method: "DELETE",
+			Path:   "/api/v1/permissions/delete-role-permission/:id",
+		},
+		{
+			Name:   "ADD_USER_PERMISSION",
+			Method: "POST",
+			Path:   "/api/v1/permissions/add-user-permission",
+		},
+		{
+			Name:   "DELETE_USER_PERMISSION",
+			Method: "DELETE",
+			Path:   "/api/v1/permissions/delete-user-permission/:id",
 		},
 
 		// Permissions for User
@@ -98,6 +128,11 @@ func NewPermissions() *Permissions {
 			Name:   "UPDATE_USER_LOGIN",
 			Method: "PUT",
 			Path:   "/api/v1/users/user-login",
+		},
+		{
+			Name:   "DEACTIVATE_USER",
+			Method: "PUT",
+			Path:   "/api/v1/users/deactivate/:id",
 		},
 	}
 

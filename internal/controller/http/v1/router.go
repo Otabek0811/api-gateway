@@ -29,7 +29,9 @@ func NewRoutes(apiV1Group fiber.Router, log logger.Interface, cfg *config.Config
 		userGroup.Put("/:id", r.updateUser)
 		userGroup.Delete("/:id", r.deleteUser)
 		userGroup.Put("/user-login", r.updateUserLogin)
+		userGroup.Put("/deactivate/:id", r.deActivateUser)
 	}
+
 	roleGroup := apiV1Group.Group("/roles")
 	{
 		roleGroup.Post("/", r.createRole)

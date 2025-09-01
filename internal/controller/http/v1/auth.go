@@ -35,3 +35,11 @@ func (r *V1) resendActivation(ctx *fiber.Ctx) error {
 	}
 	return nil
 }
+
+func (r *V1) deActivateUser(ctx *fiber.Ctx) error {
+	if err := r.MakeProxy(ctx, r.cfg.ServiceUrl.Auth, ctx.OriginalURL()); err != nil {
+		r.log.Error("proxy error", err)
+		return r.HandleErrorResponse(ctx, fiber.StatusInternalServerError, "proxy error", err)
+	}
+	return nil
+}

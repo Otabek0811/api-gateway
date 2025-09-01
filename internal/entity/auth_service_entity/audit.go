@@ -1,6 +1,8 @@
 package auth_service_entity
 
-import "time"
+import (
+	"time"
+)
 
 type Audit struct {
 	ID        string    `json:"id"`

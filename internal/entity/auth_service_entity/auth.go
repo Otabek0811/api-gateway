@@ -21,3 +21,9 @@ type HasAccessModel struct {
 	UserRole  string `json:"user_role"`
 	HasAccess bool   `json:"has_access"`
 }
+
+// HasErrorModel ...
+type HasErrorModel struct {
+	Error     interface{} `json:"error"`
+	HasAccess bool        `json:"has_access"`
+}

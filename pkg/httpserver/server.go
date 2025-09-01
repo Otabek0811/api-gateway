@@ -6,6 +6,8 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 )
 
 const (
@@ -51,6 +53,17 @@ func New(opts ...Option) *Server {
 		JSONEncoder:  json.Marshal,
 	})
 
+	app.Get("/metrics", monitor.New(monitor.Config{Title: "Api Gateway Metrics"}))
+	app.Use(cache.New(cache.Config{
+		Next: func(c *fiber.Ctx) bool {
+			if c.Method() != fiber.MethodGet {
+				return true
+			}
+			return c.Query("cache") != "true"
+		},
+		Expiration:   30 * time.Second,
+		CacheControl: true,
+	}))
 	s.App = app
 
 	return s

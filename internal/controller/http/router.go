@@ -1,4 +1,4 @@
-// Package v1 implements routing paths. Each services in own file.
+// Package http implements routing paths. Each service is in its own file.
 package http
 
 import (
@@ -8,8 +8,10 @@ import (
 	"GolandProjects/api-gateway/pkg/logger"
 	"github.com/ansrivas/fiberprometheus/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/swagger"
 	"net/http"
+	"time"
 )
 
 // NewRouter -.
@@ -25,6 +27,12 @@ func NewRouter(app *fiber.App, cfg *config.Config, log logger.Interface) {
 	// Options
 	app.Use(middleware.Logger(log))
 	app.Use(middleware.Recovery(log))
+
+	app.Use(limiter.New(limiter.Config{
+		Max:               30,
+		Expiration:        10 * time.Second,
+		LimiterMiddleware: limiter.SlidingWindow{},
+	}))
 
 	// Prometheus metrics
 	if cfg.Metrics.Enabled {

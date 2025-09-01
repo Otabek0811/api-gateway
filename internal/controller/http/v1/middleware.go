@@ -35,7 +35,11 @@ func (r *V1) AuthMiddleware() fiber.Handler {
 		}
 
 		if statusCode >= 300 {
-			return r.HandleErrorResponse(c, statusCode, "forbidden", fmt.Errorf("status %d", statusCode))
+			var result auth_service_entity.HasErrorModel
+			if err := json.Unmarshal(data, &result); err != nil {
+				return r.HandleErrorResponse(c, fiber.StatusInternalServerError, "invalid response format", err)
+			}
+			return r.HandleErrorResponse(c, statusCode, "forbidden", fmt.Errorf("%s", result.Error))
 		}
 
 		var result auth_service_entity.HasAccessModel
@@ -47,9 +51,9 @@ func (r *V1) AuthMiddleware() fiber.Handler {
 			return r.HandleErrorResponse(c, fiber.StatusForbidden, "access denied", fmt.Errorf("no permission"))
 		}
 
-		c.Set("user_id", result.UserID)
-		c.Set("user_role", result.RoleID)
-		c.Set("user_role_id", result.RoleID)
+		c.Request().Header.Set("user_id", result.UserID)
+		c.Request().Header.Set("user_role", result.UserRole)
+		c.Request().Header.Set("user_role_id", result.RoleID)
 
 		return c.Next()
 	}

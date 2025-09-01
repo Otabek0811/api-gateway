@@ -32,20 +32,3 @@ EXPOSE 8080
 
 # Command to run the binary
 CMD ["/app/api-gateway/api-gateway-binary"]
-
-#
-#FROM golang:1.25.0 AS builder
-#WORKDIR /app
-#COPY go.mod go.sum ./
-#RUN go mod download
-#COPY . .
-#RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o api-gateway ./cmd/app
-#
-## Debian-based runtime
-#FROM debian:bullseye-slim
-#WORKDIR /app
-#COPY --from=builder /app/api-gateway /app/
-#COPY --from=builder /app/config /app/config
-#COPY --from=builder /app/.env /app/.env
-#EXPOSE 8080
-#CMD ["/app/api-gateway"]

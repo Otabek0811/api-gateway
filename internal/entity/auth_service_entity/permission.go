@@ -5,6 +5,8 @@ type Permission struct {
 	Name        string `json:"name"`
 	Status      bool   `json:"status"`
 	Description string `json:"description"`
+	Path        string `json:"path"`
+	Method      string `json:"method"`
 }
 
 type PermissionPK struct {
@@ -21,6 +23,8 @@ type UpdatePermission struct {
 	Name        string `json:"name"`
 	Status      bool   `json:"status"`
 	Description string `json:"description"`
+	Path        string `json:"path"`
+	Method      string `json:"method"`
 	UpdatedBy   string `json:"updated_by"`
 }
 

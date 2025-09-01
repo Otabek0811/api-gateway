@@ -9,6 +9,15 @@ definitions:
       value:
         type: string
     type: object
+  auth_service_entity.GetPermissions:
+    properties:
+      count:
+        type: integer
+      permissions:
+        items:
+          $ref: '#/definitions/auth_service_entity.Permission'
+        type: array
+    type: object
   auth_service_entity.GetRoles:
     properties:
       count:
@@ -17,6 +26,37 @@ definitions:
         items:
           $ref: '#/definitions/auth_service_entity.Role'
         type: array
+    type: object
+  auth_service_entity.GetUsers:
+    properties:
+      count:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/auth_service_entity.User'
+        type: array
+    type: object
+  auth_service_entity.Login:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+      platform:
+        type: string
+    type: object
+  auth_service_entity.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      session:
+        $ref: '#/definitions/auth_service_entity.Session'
+      user_id:
+        type: string
+      user_name:
+        type: string
     type: object
   auth_service_entity.OrderBy:
     properties:
@@ -27,32 +67,25 @@ definitions:
     type: object
   auth_service_entity.Permission:
     properties:
-      created_at:
-        type: string
-      created_by:
-        type: string
       description:
         type: string
-      id:
+      method:
         type: string
       name:
         type: string
+      path:
+        type: string
       status:
         type: boolean
-      updated_at:
-        type: string
-      updated_by:
+    type: object
+  auth_service_entity.PermissionPK:
+    properties:
+      id:
         type: string
     type: object
   auth_service_entity.Role:
     properties:
-      created_at:
-        type: string
-      created_by:
-        type: string
       description:
-        type: string
-      id:
         type: string
       name:
         type: string
@@ -62,9 +95,142 @@ definitions:
         type: array
       status:
         type: boolean
-      updated_at:
+    type: object
+  auth_service_entity.RolePK:
+    properties:
+      id:
         type: string
+    type: object
+  auth_service_entity.RolePermission:
+    properties:
+      perm_id:
+        type: string
+      role_id:
+        type: string
+    type: object
+  auth_service_entity.Session:
+    properties:
+      expires_at:
+        type: string
+      ip_address:
+        type: string
+      is_active:
+        type: boolean
+      last_active_at:
+        type: string
+      platform:
+        type: string
+      user_agent:
+        type: string
+      user_id:
+        type: string
+    type: object
+  auth_service_entity.UpdateFieldItem:
+    properties:
+      column:
+        type: string
+      value: {}
+    type: object
+  auth_service_entity.UpdateFieldRequest:
+    properties:
+      filter:
+        items:
+          $ref: '#/definitions/auth_service_entity.Filter'
+        type: array
+      items:
+        items:
+          $ref: '#/definitions/auth_service_entity.UpdateFieldItem'
+        type: array
+    type: object
+  auth_service_entity.UpdatePermission:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      method:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      status:
+        type: boolean
       updated_by:
+        type: string
+    type: object
+  auth_service_entity.UpdateRole:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: boolean
+      updated_by:
+        type: string
+    type: object
+  auth_service_entity.UpdateUser:
+    properties:
+      address:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+      role:
+        $ref: '#/definitions/auth_service_entity.Role'
+      status:
+        type: string
+    type: object
+  auth_service_entity.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/auth_service_entity.Permission'
+        type: array
+      phone_number:
+        type: string
+      role:
+        $ref: '#/definitions/auth_service_entity.Role'
+      status:
+        type: string
+      username:
+        type: string
+    type: object
+  auth_service_entity.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth_service_entity.UserPK:
+    properties:
+      id:
+        type: string
+    type: object
+  auth_service_entity.UserPermission:
+    properties:
+      perm_id:
+        type: string
+      user_id:
         type: string
     type: object
   entity.ErrorResponse:
@@ -95,6 +261,791 @@ info:
   title: Go Fiber Api Gateway
   version: "1.0"
 paths:
+  /api/v1/auth/activate/{activation_token}:
+    get:
+      consumes:
+      - application/json
+      description: activate
+      operationId: activate
+      parameters:
+      - description: ACTIVATION TOKEN
+        in: path
+        name: activation_token
+        required: true
+        type: string
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: activate
+      tags:
+      - auth
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: login
+      operationId: login
+      parameters:
+      - description: login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.LoginResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: login
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: create user
+      operationId: create-user
+      parameters:
+      - description: user body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: create user
+      tags:
+      - auth
+  /api/v1/auth/resend-activation/{activation_token}:
+    get:
+      consumes:
+      - application/json
+      description: resend-activation
+      operationId: resend-activation
+      parameters:
+      - description: ACTIVATION TOKEN
+        in: path
+        name: activation_token
+        required: true
+        type: string
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: resend-activation
+      tags:
+      - auth
+  /api/v1/permissions:
+    get:
+      consumes:
+      - application/json
+      description: get list permissions
+      operationId: get-list-permission
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.GetPermissions'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get list permissions
+      tags:
+      - permissions
+    patch:
+      consumes:
+      - application/json
+      description: update permission field
+      operationId: update-permission-field
+      parameters:
+      - description: body
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UpdateFieldRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.PermissionPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: update permission field
+      tags:
+      - permissions
+    post:
+      consumes:
+      - application/json
+      description: create permission
+      operationId: create-permission
+      parameters:
+      - description: permission body
+        in: body
+        name: permission
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.Permission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.PermissionPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: create permission
+      tags:
+      - permissions
+  /api/v1/permissions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete permission
+      operationId: delete-permission
+      parameters:
+      - description: PERMISSION ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: delete permission
+      tags:
+      - permissions
+    get:
+      consumes:
+      - application/json
+      description: get permission
+      operationId: get-permission
+      parameters:
+      - description: PERMISSION ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.Permission'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get permission
+      tags:
+      - permissions
+    put:
+      consumes:
+      - application/json
+      description: update permission
+      operationId: update-permission
+      parameters:
+      - description: PERMISSION ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: permission
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UpdatePermission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.PermissionPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: update permission
+      tags:
+      - permissions
+  /api/v1/permissions/add-role-permission:
+    post:
+      consumes:
+      - application/json
+      description: add role permission
+      operationId: add-role-permission
+      parameters:
+      - description: body
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.RolePermission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.PermissionPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: add role permission
+      tags:
+      - permissions
+  /api/v1/permissions/add-user-permission:
+    post:
+      consumes:
+      - application/json
+      description: add user permission
+      operationId: add-user-permission
+      parameters:
+      - description: body
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UserPermission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.PermissionPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: add user permission
+      tags:
+      - permissions
+  /api/v1/permissions/delete-role-permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete role permission
+      operationId: delete-role-permission
+      parameters:
+      - description: ROLE PERMISSION ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: delete role permission
+      tags:
+      - permissions
+  /api/v1/permissions/delete-user-permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user permission
+      operationId: delete-user-permission
+      parameters:
+      - description: USER PERMISSION ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: delete user permission
+      tags:
+      - permissions
   /api/v1/roles:
     get:
       consumes:
@@ -106,7 +1057,7 @@ paths:
         name: limit
         type: integer
       - in: query
-        name: offset
+        name: page
         type: integer
       produces:
       - application/json
@@ -151,7 +1102,638 @@ paths:
       - ApiKeyAuth: []
       summary: get list roles
       tags:
-      - role
+      - roles
+    patch:
+      consumes:
+      - application/json
+      description: update role field
+      operationId: update-role-field
+      parameters:
+      - description: body
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UpdateFieldRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.RolePK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: update role field
+      tags:
+      - roles
+    post:
+      consumes:
+      - application/json
+      description: create role
+      operationId: create-role
+      parameters:
+      - description: role body
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.Role'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.RolePK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: create role
+      tags:
+      - roles
+  /api/v1/roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete role
+      operationId: delete-role
+      parameters:
+      - description: ROLE ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: delete role
+      tags:
+      - roles
+    get:
+      consumes:
+      - application/json
+      description: get role
+      operationId: get-role
+      parameters:
+      - description: ROLE ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.Role'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get role
+      tags:
+      - roles
+    put:
+      consumes:
+      - application/json
+      description: update role
+      operationId: update-role
+      parameters:
+      - description: ROLE ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UpdateRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.RolePK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: update role
+      tags:
+      - roles
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      description: get list users
+      operationId: get-list-user
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.GetUsers'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get list users
+      tags:
+      - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user
+      operationId: delete-user
+      parameters:
+      - description: USER ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: get user
+      operationId: get-user
+      parameters:
+      - description: USER ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: update user
+      operationId: update-user
+      parameters:
+      - description: USER ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.UserPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: update user
+      tags:
+      - users
+  /api/v1/users/deactivate/{id}:
+    put:
+      consumes:
+      - application/json
+      description: deactivate user
+      operationId: deactivate-user
+      parameters:
+      - description: USER ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.UserPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: deactivate user
+      tags:
+      - users
+  /api/v1/users/user-login/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update user login
+      operationId: update-user-login
+      parameters:
+      - description: USER ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_entity.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth_service_entity.UserPK'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "422":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.ErrorResponse'
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: update user login
+      tags:
+      - users
 securityDefinitions:
   ApiKeyAuth:
     in: header
